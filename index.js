@@ -23,6 +23,7 @@ async function run() {
         const tourPlaceCollection = database.collection('tourPlace');
         const locationCollection = database.collection('locations');
         const guidesCollection = database.collection('guideList');
+        const usersCollection = database.collection('usersList');
 
         // GET LOCATIONS API
         app.get('/locations', async (req, res) => {
@@ -52,6 +53,14 @@ async function run() {
             }
             res.send(guide);
             console.log(guide);
+        });
+
+        // POST USER API
+        app.post('/users/:id', async (req, res) => {
+            const id = req.params.id;
+            const userData = req.body;
+            const result = await usersCollection.insertOne(userData);
+            res.send(result);
         })
 
     }
