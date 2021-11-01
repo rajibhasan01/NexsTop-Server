@@ -52,7 +52,7 @@ async function run() {
                 guide = await cursor.toArray();
             }
             res.send(guide);
-            console.log(guide);
+            // console.log(guide);
         });
 
         // POST USER API
@@ -60,6 +60,45 @@ async function run() {
             const id = req.params.id;
             const userData = req.body;
             const result = await usersCollection.insertOne(userData);
+            res.send(result);
+        })
+
+        // GET USER API
+        app.get('/users', async (req, res) => {
+            const search = req.query.search;
+            const query = { email: search };
+            const users = await usersCollection.find(query).toArray();
+            let obj = {};
+
+            users.map(user => {
+                if (obj[user.product_id]) {
+                    obj[user.product_id] = obj[user.product_id] + 1;
+                }
+                else {
+                    obj[user.product_id] = 1;
+                }
+            });
+
+            const usersPackage = [];
+
+            for (const key in obj) {
+                const id = parseInt(key);
+                const query = { id: id };
+                const package = await tourPlaceCollection.findOne(query);
+                package.quantity = obj[key];
+                usersPackage.push(package);
+            }
+
+            // console.log(usersPackage);
+            res.send(usersPackage);
+        });
+
+        // DELETE FROM USER API
+        app.delete('/users/:id', async (req, res) => {
+            const id = req.params.id;
+            const query = { product_id: id };
+            const result = await usersCollection.deleteMany(query);
+            console.log(result);
             res.send(result);
         })
 
