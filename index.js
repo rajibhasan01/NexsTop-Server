@@ -38,7 +38,8 @@ async function run() {
             const cursor = tourPlaceCollection.find({});
             const result = await cursor.toArray();
             res.send(result);
-        })
+        });
+
 
         // GET GUIDES LIST API
         app.get('/guides', async (req, res) => {
@@ -52,8 +53,8 @@ async function run() {
                 guide = await cursor.toArray();
             }
             res.send(guide);
-            // console.log(guide);
         });
+
 
         // POST USER API
         app.post('/users/:id', async (req, res) => {
@@ -61,7 +62,7 @@ async function run() {
             const userData = req.body;
             const result = await usersCollection.insertOne(userData);
             res.send(result);
-        })
+        });
 
         // GET USER API
         app.get('/users', async (req, res) => {
@@ -89,7 +90,6 @@ async function run() {
                 usersPackage.push(package);
             }
 
-            // console.log(usersPackage);
             res.send(usersPackage);
         });
 
@@ -117,16 +117,15 @@ async function run() {
                 emailBasedData.push(package);
             }
 
-            console.log(emailBasedData);
             res.send(emailBasedData);
         });
+
 
         // DELETE FROM USER API
         app.delete('/users/:id', async (req, res) => {
             const id = req.params.id;
             const query = { product_id: id };
             const result = await usersCollection.deleteMany(query);
-            console.log(result);
             res.send(result);
         });
 
@@ -136,8 +135,24 @@ async function run() {
             const email = req.params.email;
             const query = { email: email };
             const result = await usersCollection.deleteMany(query);
-            console.log(result);
             res.send(result);
+        });
+
+
+        // UPDATE STATUS API
+        app.put('/manageusers/:email', async (req, res) => {
+            const email = req.params.email;
+            const updateUser = req.body;
+            const filter = { email: email };
+            const options = { upsert: true };
+            const updateDoc = {
+                $set: {
+                    status: updateUser[0]
+                }
+            };
+            const result = await usersCollection.updateMany(filter, updateDoc, options);
+            res.send(result);
+
         });
 
     }
