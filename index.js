@@ -40,6 +40,14 @@ async function run() {
             res.send(result);
         });
 
+        // POST TOUR PLACE API
+        app.post('/tourplaces', async (req, res) => {
+            const data = req.body;
+            const result = await tourPlaceCollection.insertOne(data);
+            console.log(result);
+            res.send(result);
+        })
+
 
         // GET GUIDES LIST API
         app.get('/guides', async (req, res) => {
