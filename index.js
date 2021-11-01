@@ -93,6 +93,34 @@ async function run() {
             res.send(usersPackage);
         });
 
+
+        // GET EMAIL MATCH USER API
+        app.get('/manageusers', async (req, res) => {
+            const totalUser = await usersCollection.find({}).toArray();
+
+            let emailObj = {};
+            totalUser.map(user => {
+                if (emailObj[user.email]) {
+                    emailObj[user.email] = emailObj[user.email] + 1;
+                }
+                else {
+                    emailObj[user.email] = 1;
+                }
+            });
+
+            const emailBasedData = [];
+
+            for (const key in emailObj) {
+                const query = { email: key };
+                const package = await usersCollection.findOne(query);
+                package.quantity = emailObj[key];
+                emailBasedData.push(package);
+            }
+
+            console.log(emailBasedData);
+            res.send(emailBasedData);
+        });
+
         // DELETE FROM USER API
         app.delete('/users/:id', async (req, res) => {
             const id = req.params.id;
@@ -100,7 +128,7 @@ async function run() {
             const result = await usersCollection.deleteMany(query);
             console.log(result);
             res.send(result);
-        })
+        });
 
     }
     finally {
